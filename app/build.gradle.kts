@@ -72,6 +72,8 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.navigation:navigation-runtime-ktx:2.8.2")
     implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation ("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.4")
 
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
