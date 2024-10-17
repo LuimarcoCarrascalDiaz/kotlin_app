@@ -13,16 +13,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.uniandes.ecobites.R
-import com.uniandes.ecobites.ui.data.signInWithEmail
+import com.uniandes.ecobites.ui.data.signUpWithEmailAndName  // Import the sign-up function
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
+fun SignUpScreen(onSignUpSuccess: () -> Unit,navController: NavController) {
     val context = LocalContext.current
+    var name by remember { mutableStateOf("") }  // Name input state
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
@@ -32,9 +34,9 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.surfaceContainer)
     ) {
-        // Log in text at the top
+        // Sign-Up text at the top
         Text(
-            text = "Log in",
+            text = "Sign Up",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -42,6 +44,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                 .padding(top = 28.dp)
         )
 
+        // Content in the center
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -57,6 +60,16 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                     .width(350.dp)
                     .height(350.dp)
             )
+
+            // Name Input Field
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Email Input Field
             OutlinedTextField(
@@ -79,16 +92,16 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Sign-In Button
+            // Sign-Up Button
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        val result = signInWithEmail(email, password)
+                        val result = signUpWithEmailAndName(email, password, name)  // Call the sign-up function
                         result.onSuccess {
-                            Toast.makeText(context, "Signed in successfully!", Toast.LENGTH_LONG).show()
-                            onLoginSuccess()
+                            Toast.makeText(context, "Signed up successfully!", Toast.LENGTH_LONG).show()
+                            onSignUpSuccess()  // Trigger the success callback
                         }.onFailure { e ->
-                            Toast.makeText(context, "Sign in failed: ${e.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Sign up failed: ${e.message}", Toast.LENGTH_LONG).show()
                         }
                     }
                 },
@@ -96,19 +109,20 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                     .width(200.dp)
                     .height(48.dp)
             ) {
-                Text("Sign in")
+                Text("Sign Up")
             }
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Sign-Up Button
+            // Navigate to Login Button (optional)
             TextButton(
                 onClick = {
-                    navController.navigate("signup")  // Navigate to Sign-Up Screen
+                    navController.navigate("login")
                 }
             ) {
-                Text("Don't have an account? Sign Up")
+                Text("Already have an account? Log In")
             }
         }
     }
 }
+

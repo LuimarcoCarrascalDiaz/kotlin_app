@@ -7,33 +7,37 @@ import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
-fun NavBar(selectedTab: Int, onTabSelected: (Int) -> Unit) {
+fun NavBar(navController: NavController) {
+    val currentRoute = navController.currentBackStackEntryAsState()?.value?.destination?.route
+
     NavigationBar {
         NavigationBarItem(
             icon = { Icon(Icons.Rounded.Home, contentDescription = "Home") },
             label = { Text("Home") },
-            selected = selectedTab == 0,
-            onClick = { onTabSelected(0) }
+            selected = currentRoute == "home",
+            onClick = { navController.navigate("home") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Rounded.ShoppingCart, contentDescription = "Cart") },
             label = { Text("Cart") },
-            selected = selectedTab == 1,
-            onClick = { onTabSelected(1) }
+            selected = currentRoute == "cart",
+            onClick = { navController.navigate("cart") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Rounded.List, contentDescription = "Orders") },
             label = { Text("Orders") },
-            selected = selectedTab == 2,
-            onClick = { onTabSelected(2) }
+            selected = currentRoute == "orders",
+            onClick = { navController.navigate("orders") }
         )
         NavigationBarItem(
             icon = { Icon(Icons.Rounded.Person, contentDescription = "Profile") },
             label = { Text("Profile") },
-            selected = selectedTab == 3,
-            onClick = { onTabSelected(3) }
+            selected = currentRoute == "profile",
+            onClick = { navController.navigate("profile") }
         )
     }
 }
