@@ -112,7 +112,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
             if (isFingerprintSupported) {
                 Button(
                     onClick = {
-                        biometricAuth.authenticate()  // Inicia el proceso de autenticación biométrica
+                        biometricAuth.authenticate(navController)  // Inicia el proceso de autenticación biométrica
                     },
                     modifier = Modifier
                         .width(200.dp)

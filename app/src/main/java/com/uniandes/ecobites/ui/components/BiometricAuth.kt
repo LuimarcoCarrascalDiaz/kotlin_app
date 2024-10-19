@@ -7,17 +7,25 @@ import android.content.pm.PackageManager
 import android.hardware.fingerprint.FingerprintManager
 import android.os.CancellationSignal
 import androidx.core.app.ActivityCompat
+import androidx.navigation.NavController
 
 class BiometricAuth(private val context: Context) {
 
     private var cancellationSignal: CancellationSignal? = null
+
+    // agregamos el navController para la navegación
+    private var navController: NavController? = null
+
 
     private val authenticationCallback: FingerprintManager.AuthenticationCallback =
         object : FingerprintManager.AuthenticationCallback() {
             @Deprecated("Deprecated in Java")
             override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                // Aquí manejas el éxito de la autenticación
+                // Aquí manejo el éxito de la autenticación
+                navController?.navigate("home") {
+                    popUpTo("login") { inclusive = true}
+                }
             }
 
             @Deprecated("Deprecated in Java")
@@ -38,8 +46,9 @@ class BiometricAuth(private val context: Context) {
         }
     }
 
-    // Función para iniciar la autenticación por huella
-    fun authenticate() {
+    // Función para iniciar la autenticación por huella y navegar a la pantalla de home si la navegación es exitosa
+    fun authenticate(navController: NavController) {
+        this.navController = navController // guardamos el navController para poder navegar después
         val fingerprintManager = context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.USE_FINGERPRINT) != PackageManager.PERMISSION_GRANTED) {
