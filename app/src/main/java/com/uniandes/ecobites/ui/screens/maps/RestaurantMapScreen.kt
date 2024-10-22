@@ -1,6 +1,7 @@
 import android.Manifest
 import android.content.pm.PackageManager
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,12 +31,12 @@ fun RestaurantMapScreen() {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
-    var places by remember { mutableStateOf(listOf<Place>()) }
-    var predictions by remember { mutableStateOf(listOf<String>()) }
+    var predictions by remember { mutableStateOf(listOf<Pair<String, String>>()) } // List of Pair (placeId, description)
+    var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Inicializar Google Places API con tu clave
+    // Inicializar Google Places API
     LaunchedEffect(Unit) {
         Places.initialize(context.applicationContext, "AIzaSyCTHkA6PG3Zr_nhxq8N7dlX-vrmEM4mltY")
         val placesClient = Places.createClient(context)
@@ -54,20 +55,26 @@ fun RestaurantMapScreen() {
             onValueChange = { newText ->
                 searchText = newText
                 coroutineScope.launch {
-                    isLoading = true
-                    val request = FindAutocompletePredictionsRequest.builder()
-                        .setQuery(newText.text)
-                        .build()
-                    val placesClient = Places.createClient(context)
-                    placesClient.findAutocompletePredictions(request)
-                        .addOnSuccessListener { response ->
-                            predictions = response.autocompletePredictions.map { it.getFullText(null).toString() }
-                            isLoading = false
-                        }
-                        .addOnFailureListener {
-                            isLoading = false
-                            Toast.makeText(context, "Error al buscar lugares", Toast.LENGTH_LONG).show()
-                        }
+                    if (newText.text.isNotBlank()) {
+                        isLoading = true
+                        val placesClient = Places.createClient(context)
+                        val request = FindAutocompletePredictionsRequest.builder()
+                            .setQuery(newText.text)
+                            .build()
+                        placesClient.findAutocompletePredictions(request)
+                            .addOnSuccessListener { response ->
+                                predictions = response.autocompletePredictions.map {
+                                    it.placeId to it.getFullText(null).toString() // Save placeId and description
+                                }
+                                isLoading = false
+                            }
+                            .addOnFailureListener {
+                                isLoading = false
+                                Toast.makeText(context, "Error al buscar lugares", Toast.LENGTH_LONG).show()
+                            }
+                    } else {
+                        predictions = emptyList()
+                    }
                 }
             },
             placeholder = { Text("Buscar lugar...") },
@@ -82,8 +89,29 @@ fun RestaurantMapScreen() {
 
         // Mostrar sugerencias basadas en autocompletar
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(predictions) { prediction ->
-                Text(text = prediction, modifier = Modifier.padding(8.dp))
+            items(predictions) { (placeId, description) ->
+                Text(
+                    text = description,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            // Obtener detalles del lugar seleccionado
+                            coroutineScope.launch {
+                                val placesClient = Places.createClient(context)
+                                val placeFields = listOf(Place.Field.LAT_LNG, Place.Field.NAME)
+                                val fetchPlaceRequest = FetchPlaceRequest.builder(placeId, placeFields).build()
+
+                                placesClient.fetchPlace(fetchPlaceRequest)
+                                    .addOnSuccessListener { fetchPlaceResponse ->
+                                        val place = fetchPlaceResponse.place
+                                        selectedLocation = place.latLng
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(context, "Error al obtener detalles del lugar", Toast.LENGTH_LONG).show()
+                                    }
+                            }
+                        }
+                )
             }
         }
 
@@ -92,7 +120,7 @@ fun RestaurantMapScreen() {
         }
 
         if (permissionGranted) {
-            // Coordenadas de Bogotá
+            // Coordenadas iniciales de Bogotá
             val bogota = LatLng(4.60971, -74.08175)
             val cameraPositionState = rememberCameraPositionState {
                 position = CameraPosition.fromLatLngZoom(bogota, 15f)
@@ -102,13 +130,12 @@ fun RestaurantMapScreen() {
                 modifier = Modifier.weight(1f),
                 cameraPositionState = cameraPositionState,
             ) {
-                places.forEach { place ->
-                    place.latLng?.let { latLng ->
-                        Marker(
-                            state = rememberMarkerState(position = latLng),
-                            title = place.name
-                        )
-                    }
+                // Si hay una ubicación seleccionada, mostrar el marcador
+                selectedLocation?.let { location ->
+                    Marker(
+                        state = rememberMarkerState(position = location),
+                        title = "Lugar seleccionado"
+                    )
                 }
             }
         } else {
@@ -116,4 +143,3 @@ fun RestaurantMapScreen() {
         }
     }
 }
-
