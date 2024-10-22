@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.libraries.places.api.Places
@@ -31,7 +32,7 @@ fun RestaurantMapScreen() {
     val context = LocalContext.current
     var permissionGranted by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
-    var predictions by remember { mutableStateOf(listOf<Pair<String, String>>()) } // List of Pair (placeId, description)
+    var predictions by remember { mutableStateOf(listOf<Pair<String, String>>()) }
     var selectedLocation by remember { mutableStateOf<LatLng?>(null) }
     var isLoading by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -46,6 +47,10 @@ fun RestaurantMapScreen() {
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(4.60971, -74.08175), 15f)
     }
 
     Column {
@@ -64,7 +69,7 @@ fun RestaurantMapScreen() {
                         placesClient.findAutocompletePredictions(request)
                             .addOnSuccessListener { response ->
                                 predictions = response.autocompletePredictions.map {
-                                    it.placeId to it.getFullText(null).toString() // Save placeId and description
+                                    it.placeId to it.getFullText(null).toString()
                                 }
                                 isLoading = false
                             }
@@ -95,7 +100,6 @@ fun RestaurantMapScreen() {
                     modifier = Modifier
                         .padding(8.dp)
                         .clickable {
-                            // Obtener detalles del lugar seleccionado
                             coroutineScope.launch {
                                 val placesClient = Places.createClient(context)
                                 val placeFields = listOf(Place.Field.LAT_LNG, Place.Field.NAME)
@@ -105,6 +109,12 @@ fun RestaurantMapScreen() {
                                     .addOnSuccessListener { fetchPlaceResponse ->
                                         val place = fetchPlaceResponse.place
                                         selectedLocation = place.latLng
+                                        place.latLng?.let { location ->
+                                            // Mover la cámara al lugar seleccionado
+                                            cameraPositionState.move(
+                                                CameraUpdateFactory.newLatLngZoom(location, 15f)
+                                            )
+                                        }
                                     }
                                     .addOnFailureListener {
                                         Toast.makeText(context, "Error al obtener detalles del lugar", Toast.LENGTH_LONG).show()
@@ -120,17 +130,11 @@ fun RestaurantMapScreen() {
         }
 
         if (permissionGranted) {
-            // Coordenadas iniciales de Bogotá
-            val bogota = LatLng(4.60971, -74.08175)
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(bogota, 15f)
-            }
-
             GoogleMap(
                 modifier = Modifier.weight(1f),
                 cameraPositionState = cameraPositionState,
             ) {
-                // Si hay una ubicación seleccionada, mostrar el marcador
+                // Actualizar el marcador en la nueva ubicación seleccionada
                 selectedLocation?.let { location ->
                     Marker(
                         state = rememberMarkerState(position = location),
