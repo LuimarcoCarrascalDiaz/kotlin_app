@@ -1,5 +1,6 @@
 package com.uniandes.ecobites.ui.navigation
 
+import RestaurantMapScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -113,6 +114,17 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                     val user = supabase.auth.currentUserOrNull()
                     val userId = user?.id
                     StoreDetailsScreen(storeName ?: "", userId = userId!!)
+                }
+            }
+        }
+        composable("location") {
+            Scaffold(
+                bottomBar = {
+                    NavBar(navController = navController)  // NavBar is shown here too
+                }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    RestaurantMapScreen()  // Pantalla de mapa
                 }
             }
         }

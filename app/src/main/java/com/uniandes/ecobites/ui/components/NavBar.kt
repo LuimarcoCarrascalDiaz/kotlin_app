@@ -6,6 +6,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.LocationOn  // Nuevo ícono de ubicación
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -38,6 +39,13 @@ fun NavBar(navController: NavController) {
             label = { Text("Profile") },
             selected = currentRoute == "profile",
             onClick = { navController.navigate("profile") }
+        )
+        // Nuevo ítem de Location
+        NavigationBarItem(
+            icon = { Icon(Icons.Rounded.LocationOn, contentDescription = "Location") },  // Ícono de ubicación
+            label = { Text("Location") },
+            selected = currentRoute == "location",
+            onClick = { navController.navigate("location") }
         )
     }
 }

@@ -31,7 +31,7 @@ class BiometricAuth(private val context: Context) {
             @Deprecated("Deprecated in Java")
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                // Aquí manejas la autenticación fallida
+                // Aquí manejo la autenticación fallida
             }
         }
 
