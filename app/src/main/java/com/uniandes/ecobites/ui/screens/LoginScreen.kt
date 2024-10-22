@@ -18,15 +18,22 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.uniandes.ecobites.R
 import com.uniandes.ecobites.ui.data.signInWithEmail
+import com.uniandes.ecobites.ui.components.BiometricAuth
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
+fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biometricAuth: BiometricAuth) {
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
+    // Verificar si la autenticación biométrica está soportada
+    val isFingerprintSupported = biometricAuth.isFingerprintSupported()
+    //Mostrar un Toast para verificar si la autenticación biométrica está soportada
+    LaunchedEffect(Unit){
+        Toast.makeText(context, "Fingerprint supported: $isFingerprintSupported", Toast.LENGTH_SHORT).show()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -97,6 +104,22 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController) {
                     .height(48.dp)
             ) {
                 Text("Sign in")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Autenticación por huella si está soportada
+            if (isFingerprintSupported) {
+                Button(
+                    onClick = {
+                        biometricAuth.authenticate(navController)  // Inicia el proceso de autenticación biométrica
+                    },
+                    modifier = Modifier
+                        .width(200.dp)
+                        .height(48.dp)
+                ) {
+                    Text("Iniciar sesión con huella")
+                }
             }
 
             Spacer(modifier = Modifier.height(10.dp))

@@ -1,5 +1,6 @@
 package com.uniandes.ecobites.ui.navigation
 
+import RestaurantMapScreen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -8,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.uniandes.ecobites.ui.components.BiometricAuth
 import com.uniandes.ecobites.ui.components.NavBar
 import com.uniandes.ecobites.ui.data.supabase
 import com.uniandes.ecobites.ui.screens.LoginScreen
@@ -20,7 +22,7 @@ import com.uniandes.ecobites.ui.screens.store.StoreDetailsScreen
 import io.github.jan.supabase.auth.auth
 
 @Composable
-fun NavigationHost(navController: NavHostController) {
+fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAuth) {
     NavHost(navController = navController, startDestination = "login") {
         // Login Screen
         composable("login") {
@@ -30,7 +32,8 @@ fun NavigationHost(navController: NavHostController) {
                         popUpTo("login") { inclusive = true }  // Remove login screen from backstack
                     }
                 },
-                navController = navController
+                navController = navController,
+                biometricAuth = biometricAuth
             )
         }
 
@@ -111,6 +114,17 @@ fun NavigationHost(navController: NavHostController) {
                     val user = supabase.auth.currentUserOrNull()
                     val userId = user?.id
                     StoreDetailsScreen(storeName ?: "", userId = userId!!)
+                }
+            }
+        }
+        composable("location") {
+            Scaffold(
+                bottomBar = {
+                    NavBar(navController = navController)  // NavBar is shown here too
+                }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    RestaurantMapScreen()  // Pantalla de mapa
                 }
             }
         }

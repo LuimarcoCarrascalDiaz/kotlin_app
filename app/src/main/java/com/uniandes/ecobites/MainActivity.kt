@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.uniandes.ecobites.ui.SplashScreen
+import com.uniandes.ecobites.ui.components.BiometricAuth
 import com.uniandes.ecobites.ui.navigation.NavigationHost
 import com.uniandes.ecobites.ui.theme.AppTheme
 import kotlinx.coroutines.delay
@@ -17,16 +18,18 @@ import kotlinx.coroutines.delay
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val biometricAuth = BiometricAuth(this)
+
         setContent {
             AppTheme {
-                MyApp()
+                MyApp(biometricAuth)
             }
         }
     }
 }
 
 @Composable
-fun MyApp() {
+fun MyApp(biometricAuth: BiometricAuth) {
     val navController = rememberNavController()  // Create the NavController
     var showSplashScreen by remember { mutableStateOf(true) }
 
@@ -39,6 +42,6 @@ fun MyApp() {
     if (showSplashScreen) {
         SplashScreen()
     } else {
-        NavigationHost(navController = navController)  // Pass the NavController here
+        NavigationHost(navController = navController, biometricAuth = biometricAuth)  // Pass the NavController here
     }
 }
