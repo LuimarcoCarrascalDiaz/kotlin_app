@@ -1,3 +1,5 @@
+package com.uniandes.ecobites.ui.components
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,53 +16,23 @@ import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import com.uniandes.ecobites.R
 
-// Data class representing a store
 data class Store(val name: String, val imageResId: Int)
 
-// List of stores with their images
-val stores = listOf(
-    Store("Exito", R.drawable.exito),
-    Store("Hornitos", R.drawable.hornitos),
-    Store("McDonalds", R.drawable.mc_donalds),
-    Store("Dunkin Donuts", R.drawable.dunkin_donuts),
-    Store("Pan Pa Ya!", R.drawable.pan_pa_ya)
-)
-
 @Composable
-fun StoresGrid(navController: NavController) {
+fun StoresGrid(navController: NavController, restaurants: List<Store>) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            stores.take(2).forEach { store ->
-                StoreItem(
-                    store = store,
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        navController.navigate("store/${store.name}")  // Navigate to store details
-                    }
-                )
-            }
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            stores.drop(2).take(3).forEach { store ->
-                StoreItem(
-                    store = store,
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        navController.navigate("store/${store.name}")  // Navigate to store details
-                    }
-                )
-            }
+        restaurants.forEach { store ->
+            StoreItem(
+                store = store,
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    navController.navigate("store/${store.name}")  // Navegar a los detalles del restaurante
+                }
+            )
         }
     }
 }
