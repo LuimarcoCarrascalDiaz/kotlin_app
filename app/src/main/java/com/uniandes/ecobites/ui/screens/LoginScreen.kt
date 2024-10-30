@@ -68,7 +68,11 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
             // Email Input Field
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    if(it.length<=30) { // Limitar a 30 caracteres
+                        email = it
+                    }
+                                },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )
