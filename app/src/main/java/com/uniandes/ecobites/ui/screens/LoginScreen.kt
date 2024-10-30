@@ -32,7 +32,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
     val isFingerprintSupported = biometricAuth.isFingerprintSupported()
     //Mostrar un Toast para verificar si la autenticación biométrica está soportada
     LaunchedEffect(Unit){
-        Toast.makeText(context, "Fingerprint supported: $isFingerprintSupported", Toast.LENGTH_SHORT).show()
+
     }
     Box(
         modifier = Modifier
@@ -68,7 +68,11 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
             // Email Input Field
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    if(it.length<=30) { // Limitar a 30 caracteres
+                        email = it
+                    }
+                                },
                 label = { Text("Email") },
                 modifier = Modifier.fillMaxWidth()
             )

@@ -24,7 +24,11 @@ import com.uniandes.ecobites.ui.screens.CartScreen
 import com.uniandes.ecobites.ui.screens.StorageScreen
 import com.uniandes.ecobites.ui.screens.store.StoreDetailsScreen
 import io.github.jan.supabase.auth.auth
-
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 @Composable
 fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAuth) {
 
@@ -66,22 +70,34 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                 }
             }
         }
-
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork = connectivityManager.activeNetwork ?: return false
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+            return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        }
         composable("cart") {
+            val context = LocalContext.current
             val user = supabase.auth.currentUserOrNull()
             val userId = user?.id
-            Scaffold(
-                bottomBar = {
-                    NavBar(navController = navController)
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    if (userId != null) {
-                        CartScreen(userId = userId)
-                    }
-               }
-            }
 
+            if (isNetworkAvailable(context)) {
+                // Si hay conexión, mostrar CartScreen normalmente
+                Scaffold(
+                    bottomBar = {
+                        NavBar(navController = navController)
+                    }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        if (userId != null) {
+                            CartScreen(userId = userId)
+                        }
+                    }
+                }
+            } else {
+                // Mostrar el mensaje de error de conexión si no hay Internet
+                Toast.makeText(context, "Sin conexión, intente más tarde", Toast.LENGTH_SHORT).show()
+            }
         }
 
         composable("orders") {
@@ -152,4 +168,5 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
             }
         }
     }
+
 }
