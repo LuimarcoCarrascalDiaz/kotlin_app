@@ -36,6 +36,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.uniandes.ecobites.R
+import androidx.navigation.NavController
+
 
 // Sample data structure for orders
 data class Order(
@@ -54,7 +56,7 @@ val pastOrders = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrdersScreen() {
+fun OrdersScreen(navController: NavController) {
     // Mockup data
 
     Scaffold(
@@ -82,7 +84,7 @@ fun OrdersScreen() {
                     color = Color.Gray
                 )
                 Button(
-                    onClick = { /* Handle order more action */ },
+                    onClick = { navController.navigate("storage") },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF907B00)  // Adjust the color as needed
                     )
