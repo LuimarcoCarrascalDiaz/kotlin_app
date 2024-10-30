@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.0.20" // Kotlin plugin for Android
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20" // Kotlin serialization plugin
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.20"
+    id ("kotlin-kapt") // Asegúrate de que kapt esté habilitado
 }
 
 android {
@@ -79,7 +80,11 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation ("com.google.maps.android:maps-compose:2.2.0")
+    implementation("androidx.room:room-common:2.6.1")
 
+    implementation ("androidx.room:room-runtime:2.4.3")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
+    kapt ("androidx.room:room-compiler:2.5.1") // Procesador de anotaciones para Room
 
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
