@@ -38,10 +38,11 @@ fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .verticalScroll(rememberScrollState())            .padding(16.dp)
     ) {
-
+        // Top Location and Search Bar Section
+        TopSection()
+        Spacer(modifier = Modifier.height(16.dp))
 
         if (isLoading) {
             // Mostrar indicador de carga mientras se obtienen los datos
@@ -53,10 +54,8 @@ fun HomeScreen(navController: NavController) {
             }
         } else {
             // Mostrar los datos una vez que estén listos
-            // Top Location and Search Bar Section
-            TopSection()
 
-            Spacer(modifier = Modifier.height(16.dp))
+
 
 //         Offer Carousel Section
             OfferCarousel()

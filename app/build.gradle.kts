@@ -79,7 +79,9 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation ("com.google.maps.android:maps-compose:2.2.0")
-
+    implementation("androidx.room:room-common:2.6.1")
+   
+    implementation ("androidx.room:room-runtime:2.4.3")
 
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")

@@ -87,7 +87,7 @@ fun OrdersScreen() {
                         containerColor = Color(0xFF907B00)  // Adjust the color as needed
                     )
                 ) {
-                    Text(text = "Order More")
+                    Text(text = "local storage")
                 }
             }
         }
