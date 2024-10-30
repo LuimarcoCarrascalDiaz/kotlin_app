@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import com.uniandes.ecobites.R
+import kotlinx.coroutines.withContext
 
 // ViewModel que utiliza LiveData en lugar de Flow
 class MenuViewModel(database: MenuDatabase) : ViewModel() {
@@ -38,8 +39,13 @@ class MenuViewModel(database: MenuDatabase) : ViewModel() {
     }
 
     private fun loadMenuItems()  {
-        _menuItems.addSource(menuDao.getAllMenuItems()) { items ->
-            _menuItems.value = items
+        // Configuración de MediatorLiveData para observar cambios en el hilo principal
+        viewModelScope.launch {
+            withContext(Dispatchers.Main) {
+                _menuItems.addSource(menuDao.getAllMenuItems()) { items ->
+                    _menuItems.postValue(items) // Asegura la actualización en el hilo principal
+                }
+            }
         }
     }
 
