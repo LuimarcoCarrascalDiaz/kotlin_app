@@ -32,7 +32,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
     val isFingerprintSupported = biometricAuth.isFingerprintSupported()
     //Mostrar un Toast para verificar si la autenticación biométrica está soportada
     LaunchedEffect(Unit){
-        Toast.makeText(context, "Fingerprint supported: $isFingerprintSupported", Toast.LENGTH_SHORT).show()
+
     }
     Box(
         modifier = Modifier
