@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    tools:ignore="ExtraText">
+    <!-- Fondo cuadrado -->
+    <path
+        android:fillColor="#E0E0E0" /> <!-- Color gris claro -->
+    android:pathData="M3,3h18v18H3z"
+
+    <!-- Ícono de imagen genérico -->
+    <path
+        android:fillColor="#757575"  /><!-- Color gris oscuro -->
+    android:pathData="M12,7.5a2.5,2.5 0 1,1 0,5 2.5,2.5 0 0,1 0,-5zM5,17h14l-4.5,-6 -3.5,4.5 -2.5,-3z"/>
+</vector>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

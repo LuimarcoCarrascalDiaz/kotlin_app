@@ -85,7 +85,9 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.4.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     kapt ("androidx.room:room-compiler:2.5.1") // Procesador de anotaciones para Room
-
+    implementation ("com.github.bumptech.glide:glide:4.12.") // Glide estándar
+    implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1") // Glide para Jetpack Compose
+    kapt ("com.github.bumptech.glide:compiler:4.12.0") // Para anotar métodos de Glide
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
