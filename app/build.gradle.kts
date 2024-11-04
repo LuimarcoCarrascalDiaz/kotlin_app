@@ -88,6 +88,7 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.12.") // Glide estándar
     implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1") // Glide para Jetpack Compose
     kapt ("com.github.bumptech.glide:compiler:4.12.0") // Para anotar métodos de Glide
+    implementation("io.coil-kt:coil-compose:2.0.0")
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
