@@ -198,7 +198,7 @@ fun StoresGrid(navController: NavController, restaurants: List<Store>) {
             StoreItem(
                 store = store,
                 onClick = {
-                    navController.navigate("store/${store.name}")
+
                 }
             )
         }
