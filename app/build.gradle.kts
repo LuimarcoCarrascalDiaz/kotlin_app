@@ -81,13 +81,14 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation ("com.google.maps.android:maps-compose:2.2.0")
     implementation("androidx.room:room-common:2.6.1")
-
+    implementation("com.google.accompanist:accompanist-flowlayout:0.28.0") // O la última versión disponible
     implementation ("androidx.room:room-runtime:2.4.3")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     kapt ("androidx.room:room-compiler:2.5.1") // Procesador de anotaciones para Room
     implementation ("com.github.bumptech.glide:glide:4.12.") // Glide estándar
     implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1") // Glide para Jetpack Compose
     kapt ("com.github.bumptech.glide:compiler:4.12.0") // Para anotar métodos de Glide
+    implementation("io.coil-kt:coil-compose:2.0.0")
     // Testing dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

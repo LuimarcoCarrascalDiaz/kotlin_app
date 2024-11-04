@@ -1,24 +1,28 @@
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uniandes.ecobites.R
-import com.uniandes.ecobites.ui.components.Store
+
+import com.uniandes.ecobites.ui.screens.home.Store
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class RestaurantViewModel : ViewModel() {
 
-    // Lista de restaurantes que será observada por la UI
-    val restaurants = mutableStateOf<List<Store>>(emptyList())
+    // StateFlow para la lista de restaurantes, que será observada por la UI
+    private val _restaurants = MutableStateFlow<List<Store>>(emptyList())
+    val restaurants: StateFlow<List<Store>> = _restaurants
 
-    // Estado de carga para mostrar un indicador de progreso
-    val isLoading = mutableStateOf(false)
+    // StateFlow para el estado de carga, que también será observado por la UI
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     // Función para cargar los restaurantes en segundo plano
     fun loadStores() {
-        isLoading.value = true  // Inicia el estado de carga
+        _isLoading.value = true  // Inicia el estado de carga
 
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -27,14 +31,14 @@ class RestaurantViewModel : ViewModel() {
             }
 
             // Actualiza la lista de restaurantes y detiene el estado de carga en el hilo principal
-            restaurants.value = result
-            isLoading.value = false
+            _restaurants.value = result
+            _isLoading.value = false
         }
     }
 
     // Función que simula la obtención de datos (aquí iría una llamada real a la base de datos o API)
     private suspend fun loadStoresFromSource(): List<Store> {
-        delay(2000)
+        delay(2000)  // Simula un retraso en la obtención de datos
 
         return listOf(
             Store("Exito", R.drawable.exito),
@@ -44,5 +48,4 @@ class RestaurantViewModel : ViewModel() {
             Store("Pan Pa Ya!", R.drawable.pan_pa_ya)
         )
     }
-
 }
