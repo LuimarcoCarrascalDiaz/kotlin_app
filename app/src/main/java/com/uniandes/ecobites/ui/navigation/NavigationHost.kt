@@ -24,6 +24,11 @@ import android.widget.Toast
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.uniandes.ecobites.R
 
 @Composable
 fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAuth) {
@@ -94,6 +99,11 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                     }
                 }
             } else {
+                Image(
+                    painter = painterResource(id = R.drawable.img),  // Reemplaza "img" con el nombre de tu imagen en drawable
+                    contentDescription = "Descripción de la imagen",
+                    modifier = Modifier.size(500.dp) // Ajusta el tamaño según tus necesidades
+                )
                 Toast.makeText(context, "Sin conexión, intente más tarde", Toast.LENGTH_SHORT).show()
             }
         }
