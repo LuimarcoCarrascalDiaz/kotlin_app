@@ -122,7 +122,22 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                 }
             }
         }
-
+        composable("storage") {
+            val menuDatabase = Room.databaseBuilder(
+                LocalContext.current,
+                MenuDatabase::class.java,
+                "menu.db"
+            ).build()
+            Scaffold(
+                bottomBar = {
+                    NavBar(navController = navController)
+                }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    StorageScreen(menuDatabase = menuDatabase)
+                }
+            }
+        }
         composable("store/{storeName}") { backStackEntry ->
             val storeName = backStackEntry.arguments?.getString("storeName")
             Scaffold(
