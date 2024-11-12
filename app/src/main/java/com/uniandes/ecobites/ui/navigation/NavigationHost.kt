@@ -100,7 +100,7 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                 }
             } else {
                 Image(
-                    painter = painterResource(id = R.drawable.img),  // Reemplaza "img" con el nombre de tu imagen en drawable
+                    painter = painterResource(id = R.drawable.carticon),  // Reemplaza "img" con el nombre de tu imagen en drawable
                     contentDescription = "Descripción de la imagen",
                     modifier = Modifier.size(500.dp) // Ajusta el tamaño según tus necesidades
                 )
