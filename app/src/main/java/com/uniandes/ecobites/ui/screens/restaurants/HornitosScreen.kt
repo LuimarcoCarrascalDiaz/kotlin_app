@@ -58,37 +58,36 @@ class HornitosViewModel : ViewModel() {
         }
     }
 
-    fun fetchProductFromFirestore(restaurantId: String) {
+    fun fetchAllProducts(restaurantId: String) {
         viewModelScope.launch {
             firestore.collection("restaurantes")
                 .document(restaurantId)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        val producto = document.getString("producto")
-                        println("Producto obtenido desde Firestore: $producto") // LOG
-                        _firebaseProduct.value = producto
+                        // Filtra todos los campos que comiencen con "producto" y recupéralos como lista
+                        val products = document.data?.filterKeys { it.startsWith("producto") }
+                            ?.values
+                            ?.map { it.toString() } ?: emptyList()
+
+                        _menuItems.value = products // Actualiza el StateFlow con los productos
                     } else {
-                        println("El documento no existe en Firestore") // LOG
+                        println("El documento no existe.")
                     }
                 }
                 .addOnFailureListener { exception ->
-                    println("Error al obtener el producto: ${exception.message}") // LOG
+                    println("Error al obtener los productos: ${exception.message}")
                 }
         }
     }
-}
+    }
 
 @Composable
 fun HornitosScreen(viewModel: HornitosViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val items = viewModel.menuItems.collectAsState()
-    val firebaseProduct = viewModel.firebaseProduct.collectAsState()
 
     LaunchedEffect(Unit) {
-        // Llama a la API para obtener el menú
-        viewModel.fetchMenu("Salads")
-        // Llama a Firestore para obtener el producto agregado
-        viewModel.fetchProductFromFirestore("ENaEJSBKgF6jcVigzCtu")
+        viewModel.fetchAllProducts("ENaEJSBKgF6jcVigzCtu") // Cargar todos los productos
     }
 
     Surface(
@@ -100,23 +99,7 @@ fun HornitosScreen(viewModel: HornitosViewModel = androidx.lifecycle.viewmodel.c
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            MenuItems(items.value)
-
-            // Mostrar producto desde Firestore si está disponible
-            firebaseProduct.value?.let { product ->
-                println("Producto mostrado en la UI: $product") // LOG
-
-                Text(
-                    text = "Producto desde Firestore:",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
-                Text(
-                    text = product,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
+            MenuItems(items.value) // Muestra la lista de productos
         }
     }
 }
