@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.uniandes.ecobites.R
+import com.uniandes.ecobites.ui.screens.restaurants.HornitosScreen
 
 @Composable
 fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAuth) {
@@ -173,6 +174,9 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                     RestaurantMapScreen()
                 }
             }
+        }
+        composable("hornitos") {
+            HornitosScreen()
         }
 
         // Pantalla de caching
