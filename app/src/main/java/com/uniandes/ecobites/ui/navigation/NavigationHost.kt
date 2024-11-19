@@ -176,7 +176,8 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
             }
         }
         composable("hornitos") {
-            HornitosScreen()
+            val context= LocalContext.current
+            HornitosScreen(context=context)
         }
 
         // Pantalla de caching
