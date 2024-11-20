@@ -181,7 +181,7 @@ fun RestaurantMapScreen() {
                 Image(
                     painter = painterResource(id = R.drawable.wifiicon),
                     contentDescription = "Ícono de ubicación requerida",
-                    modifier = Modifier.size(150.dp) // Ajusta el tamaño del ícono según tus necesidades
+                    modifier = Modifier.size(490.dp) // Ajusta el tamaño del ícono según tus necesidades
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
