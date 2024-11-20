@@ -27,7 +27,6 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 
 class HornitosViewModel : ViewModel() {
 

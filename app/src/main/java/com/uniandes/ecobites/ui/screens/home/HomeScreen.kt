@@ -1,6 +1,10 @@
 package com.uniandes.ecobites.ui.screens.home
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,10 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.uniandes.ecobites.R
 import RestaurantViewModel
 import androidx.compose.foundation.clickable
@@ -33,7 +41,6 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import coil.compose.AsyncImage
 
 // Datos de las tiendas y categorías
 data class Store(val name: String, val imageResId: Int)
@@ -56,9 +63,13 @@ fun HomeScreen(navController: NavController) {
     val carouselViewModel: CarouselViewModel = viewModel()
     val carouselImages by carouselViewModel.carouselImages.collectAsState()
 
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
-        restaurantViewModel.loadStores()
-        carouselViewModel.fetchCarouselImages()
+
+            restaurantViewModel.loadStores()
+            carouselViewModel.fetchCarouselImages()
+
     }
 
     Column(
@@ -71,7 +82,7 @@ fun HomeScreen(navController: NavController) {
         OfferCarousel()
         CategoriesRow()
 
-        if (isLoading) {
+        if (isLoading ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -82,7 +93,9 @@ fun HomeScreen(navController: NavController) {
             StoresGrid(
                 navController = navController,
                 restaurants = stores,
-                imageUrls = carouselImages
+                imageUrls = carouselImages,
+                context = context
+
             )
         }
     }
@@ -195,7 +208,14 @@ fun CategoriesRow() {
 }
 
 @Composable
-fun StoresGrid(navController: NavController, restaurants: List<Store>, imageUrls: List<String>) {
+fun StoresGrid(
+    navController: NavController,
+    restaurants: List<Store>,
+    imageUrls: List<String>,
+    context: Context
+) {
+    val hasInternet = remember { isNetworkAvailable(context) }
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -214,7 +234,7 @@ fun StoresGrid(navController: NavController, restaurants: List<Store>, imageUrls
         }
 
         items(imageUrls) { imageUrl ->
-            FirebaseImageItem(imageUrl = imageUrl)
+            FirebaseImageItem(imageUrl = imageUrl, context = context, hasInternet = hasInternet)
         }
     }
 }
@@ -246,34 +266,41 @@ fun StoreItem(store: Store, onClick: () -> Unit) {
 }
 
 @Composable
-fun FirebaseImageItem(imageUrl: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "Imagen promocional",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp)
-                .clip(MaterialTheme.shapes.extraLarge),
-            onError = {
-                Log.e("FirebaseImageItem", "Error loading image: $imageUrl")
+fun FirebaseImageItem(imageUrl: String, context: Context, hasInternet: Boolean) {
+    val request = ImageRequest.Builder(context)
+        .data(imageUrl)
+        .diskCachePolicy(CachePolicy.ENABLED) // Siempre usa caché de disco
+        .memoryCachePolicy(CachePolicy.ENABLED) // Siempre usa caché de memoria
+        .networkCachePolicy(if (hasInternet) CachePolicy.ENABLED else CachePolicy.DISABLED)
+        .listener(
+            onStart = {
+                Log.d("FirebaseImageItem", "Attempting to load image: $imageUrl")
             },
-            onSuccess = {
-                Log.d("FirebaseImageItem", "Successfully loaded image: $imageUrl")
+            onSuccess = { request, result ->
+                Log.d("FirebaseImageItem", "Image loaded successfully: $imageUrl")
+                Toast.makeText(context, "Image loaded successfully from ${result.dataSource}", Toast.LENGTH_SHORT).show()
+            },
+            onError = { request, result ->
+                Log.e("FirebaseImageItem", "Error loading image from cache or network: $imageUrl")
+                Toast.makeText(context, "Failed to load image from cache: $imageUrl", Toast.LENGTH_SHORT).show()
             }
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Mac Pollo",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
+        .build()
+
+    AsyncImage(
+        model = request,
+        contentDescription = "Imagen promocional",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(140.dp)
+            .clip(MaterialTheme.shapes.extraLarge)
+    )
+}
+
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.activeNetwork ?: return false
+    val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }
