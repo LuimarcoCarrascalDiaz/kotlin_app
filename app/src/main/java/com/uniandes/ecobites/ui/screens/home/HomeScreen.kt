@@ -1,5 +1,6 @@
 package com.uniandes.ecobites.ui.screens.home
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,6 +33,7 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import coil.compose.AsyncImage
 
 // Datos de las tiendas y categorías
 data class Store(val name: String, val imageResId: Int)
@@ -51,8 +53,12 @@ fun HomeScreen(navController: NavController) {
     val stores by restaurantViewModel.restaurants.collectAsState()
     val isLoading by restaurantViewModel.isLoading.collectAsState()
 
+    val carouselViewModel: CarouselViewModel = viewModel()
+    val carouselImages by carouselViewModel.carouselImages.collectAsState()
+
     LaunchedEffect(Unit) {
         restaurantViewModel.loadStores()
+        carouselViewModel.fetchCarouselImages()
     }
 
     Column(
@@ -73,7 +79,11 @@ fun HomeScreen(navController: NavController) {
                 CircularProgressIndicator()
             }
         } else {
-            StoresGrid(navController = navController, restaurants = stores)
+            StoresGrid(
+                navController = navController,
+                restaurants = stores,
+                imageUrls = carouselImages
+            )
         }
     }
 }
@@ -185,23 +195,26 @@ fun CategoriesRow() {
 }
 
 @Composable
-fun StoresGrid(navController: NavController, restaurants: List<Store>) {
+fun StoresGrid(navController: NavController, restaurants: List<Store>, imageUrls: List<String>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp) // Remueve padding adicional
+            .padding(0.dp)
     ) {
         items(restaurants) { store ->
             StoreItem(
                 store = store,
                 onClick = {
                     navController.navigate("hornitos")
-
                 }
             )
+        }
+
+        items(imageUrls) { imageUrl ->
+            FirebaseImageItem(imageUrl = imageUrl)
         }
     }
 }
@@ -228,6 +241,39 @@ fun StoreItem(store: Store, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun FirebaseImageItem(imageUrl: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = "Imagen promocional",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp)
+                .clip(MaterialTheme.shapes.extraLarge),
+            onError = {
+                Log.e("FirebaseImageItem", "Error loading image: $imageUrl")
+            },
+            onSuccess = {
+                Log.d("FirebaseImageItem", "Successfully loaded image: $imageUrl")
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Mac Pollo",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
