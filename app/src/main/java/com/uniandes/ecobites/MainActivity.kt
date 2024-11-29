@@ -14,12 +14,19 @@ import com.uniandes.ecobites.ui.components.BiometricAuth
 import com.uniandes.ecobites.ui.navigation.NavigationHost
 import com.uniandes.ecobites.ui.theme.AppTheme
 import kotlinx.coroutines.delay
+import com.google.firebase.FirebaseApp
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val biometricAuth = BiometricAuth(this)
-
+        FirebaseApp.initializeApp(this)
+        // Opcional: Inicializar Firebase Analytics
+        val firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        // Inicialización de Firestore
+        val firestore = FirebaseFirestore.getInstance()
         setContent {
             AppTheme {
                 MyApp(biometricAuth)

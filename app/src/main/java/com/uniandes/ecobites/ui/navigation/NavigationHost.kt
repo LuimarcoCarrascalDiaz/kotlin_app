@@ -25,10 +25,16 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.uniandes.ecobites.R
+import com.uniandes.ecobites.ui.screens.restaurants.HornitosScreen
 
 @Composable
 fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAuth) {
@@ -58,27 +64,42 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                 navController = navController
             )
         }
-
-        // Pantalla principal
-        composable("home") {
-            Scaffold(
-                bottomBar = {
-                    NavBar(navController = navController)
-                }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    HomeScreen(navController)
-                }
-            }
-        }
-
-        // Verificación de conexión a Internet
         fun isNetworkAvailable(context: Context): Boolean {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val activeNetwork = connectivityManager.activeNetwork ?: return false
             val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
             return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         }
+        // Pantalla principal
+        composable("home") {
+            val context = LocalContext.current
+
+            if (isNetworkAvailable(context)) {
+                Scaffold(
+                    bottomBar = {
+                        NavBar(navController = navController)
+                    }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        HomeScreen(navController)
+                    }
+                }
+            } else {
+
+                Scaffold(
+                    bottomBar = {
+                        NavBar(navController = navController)
+                    }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        HomeScreen(navController)
+                    }
+                }
+            }
+        }
+
+
+
 
         // Pantalla de carrito
         composable("cart") {
@@ -99,12 +120,28 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
                     }
                 }
             } else {
-                Image(
-                    painter = painterResource(id = R.drawable.carticon),  // Reemplaza "img" con el nombre de tu imagen en drawable
-                    contentDescription = "Descripción de la imagen",
-                    modifier = Modifier.size(500.dp) // Ajusta el tamaño según tus necesidades
-                )
-                Toast.makeText(context, "Sin conexión, intente más tarde", Toast.LENGTH_SHORT).show()
+                Scaffold(
+                    bottomBar = {
+                        NavBar(navController = navController)
+                    }
+                ) { innerPadding ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Image(
+                                painter = painterResource(id = R.drawable.carticon),
+                                contentDescription = "Descripción de la imagen",
+                                modifier = Modifier.size(500.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Toast.makeText(context, "Sin conexión, intente más tarde", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
         }
 
@@ -175,15 +212,20 @@ fun NavigationHost(navController: NavHostController, biometricAuth: BiometricAut
             }
         }
 
+        composable("hornitos") {
+            val context = LocalContext.current
+            HornitosScreen(context = context)
+        }
+
         // Pantalla de caching
-        composable("caching") {  // Agregamos la nueva ruta "caching"
+        composable("caching") {
             Scaffold(
                 bottomBar = {
                     NavBar(navController = navController)
                 }
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
-                    ImageCacheScreen()  // Llamada a la pantalla de caching
+                    ImageCacheScreen()
                 }
             }
         }

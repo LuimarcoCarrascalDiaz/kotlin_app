@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -157,7 +158,6 @@ fun RestaurantMapScreen() {
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.padding(16.dp))
         }
-
         if (permissionGranted) {
             GoogleMap(
                 modifier = Modifier.weight(1f),
@@ -171,9 +171,25 @@ fun RestaurantMapScreen() {
                 }
             }
         } else {
-
-            Text("Se requieren permisos de ubicación para mostrar el mapa.")
-
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.wifiicon),
+                    contentDescription = "Ícono de ubicación requerida",
+                    modifier = Modifier.size(490.dp) // Ajusta el tamaño del ícono según tus necesidades
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Se requieren permisos de ubicación para mostrar el mapa.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
     }
 }

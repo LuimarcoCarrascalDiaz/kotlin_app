@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "631169455352",
+    "project_id": "ecobitesandroid",
+    "storage_bucket": "ecobitesandroid.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:631169455352:android:d850824d325ecaea7bd70d",
+        "android_client_info": {
+          "package_name": "com.uniandes.ecobites"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKofhygTp6LyG_fZ2wLT0lpUlP-40ZH8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

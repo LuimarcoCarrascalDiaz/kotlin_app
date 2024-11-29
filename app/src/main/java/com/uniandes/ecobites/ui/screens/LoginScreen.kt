@@ -30,7 +30,7 @@ fun LoginScreen(onLoginSuccess: () -> Unit, navController: NavController, biomet
 
     // Verificar si la autenticación biométrica está soportada
     val isFingerprintSupported = biometricAuth.isFingerprintSupported()
-    //Mostrar un Toast para verificar si la autenticación biométrica está soportada
+
     LaunchedEffect(Unit){
 
     }
